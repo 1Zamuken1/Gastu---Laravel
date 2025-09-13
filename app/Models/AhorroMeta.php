@@ -29,7 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models
  */
-class AhorroMetum extends Model
+class AhorroMeta extends Model
 {
 	protected $table = 'ahorro_meta';
 	protected $primaryKey = 'ahorro_meta_id';

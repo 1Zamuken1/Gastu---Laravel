@@ -45,6 +45,12 @@ class Egreso extends Model
 
 	public function concepto_egreso()
 	{
-		return $this->belongsTo(ConceptoEgreso::class);
+		return $this->belongsTo(ConceptoEgreso::class, 'concepto_egreso_id', 'concepto_egreso_id');
+
 	}
+	public function getRouteKeyName()
+{
+    return 'egreso_id';
+}
+
 }
