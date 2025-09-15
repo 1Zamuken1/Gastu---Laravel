@@ -50,7 +50,7 @@
             <span class="side-nav-text">Reportes</span>
           </a>
         </li> -->
-      </ul>
+      <resources/views/ingresos/ul>
     </div>
   </div>
 

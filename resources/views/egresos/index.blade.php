@@ -5,14 +5,21 @@
 @section('content')
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        
-      <button class="btn btn-success" id="btnNuevoEgreso">
-            Nuevo Egreso
-        </button>
 
-        <button class="btn btn-secondary" id="btnVerConceptos">
-            Ver Conceptos
-        </button>
+        <button id="btnNuevoEgreso" 
+        data-url="{{ route('egresos.create') }}" 
+        class="btn btn-primary">
+    Nuevo Egreso
+</button>
+
+
+
+
+<button class="btn btn-secondary" 
+        id="btnVerConceptos" 
+        data-url="{{ route('conceptoegresos.modal') }}">
+    Ver Conceptos
+</button>
 
     </div>
 
@@ -32,32 +39,32 @@
                 </thead>
                 <tbody>
                     @forelse($egresos as $e)
-                        <tr>
-                            <td>{{ $e->egreso_id }}</td>
-                            <td>{{ $e->concepto_egreso?->descripcion ?? '---' }}</td>
-                            <td>${{ number_format($e->monto, 2) }}</td>
-                            <td>{{ $e->tipo }}</td>
-                            <td>{{ optional($e->fecha_registro)->format('Y-m-d') }}</td>
-                            <td>{{ $e->descripcion }}</td>
-                            <td class="text-end">
-                                <a href="{{ route('egresos.show', $e) }}" class="btn btn-sm btn-info">
-                                    <i class="fa fa-eye"></i>
-                                </a>
-                                <a href="{{ route('egresos.edit', $e) }}" class="btn btn-sm btn-warning">
-                                    <i class="fa fa-edit"></i>
-                                </a>
-                                <form action="{{ route('egresos.destroy', $e) }}" method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este egreso?')">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>{{ $e->egreso_id }}</td>
+                        <td>{{ $e->concepto_egreso?->descripcion ?? '---' }}</td>
+                        <td>${{ number_format($e->monto, 2) }}</td>
+                        <td>{{ $e->tipo }}</td>
+                        <td>{{ optional($e->fecha_registro)->format('Y-m-d') }}</td>
+                        <td>{{ $e->descripcion }}</td>
+                        <td class="text-end">
+                            <a href="{{ route('egresos.show', $e) }}" class="btn btn-sm btn-info">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                            <a href="{{ route('egresos.edit', $e) }}" class="btn btn-sm btn-warning">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <form action="{{ route('egresos.destroy', $e) }}" method="POST" class="d-inline">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este egreso?')">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="7" class="text-center">No hay egresos registrados</td>
-                        </tr>
+                    <tr>
+                        <td colspan="7" class="text-center">No hay egresos registrados</td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -75,10 +82,22 @@
             }
         });
     });
+
+    $('#btnNuevoEgreso').on('click', function() {
+    $('#modalEgresoBody').load("{{ route('egresos.form') }}");
+    $('#modalEgreso').modal('show');
+});
+
+
 </script>
 @endpush
 {{-- Aquí se inyectan los modales de esta vista --}}
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+
 @section('modals')
     @include('egresos.partials.modal-conceptos')
-    @include('egresos.partials.modal-form') 
+    @include('egresos.partials.modal-form', ['conceptos' => $conceptoEgresos])
+
+
 @endsection
+

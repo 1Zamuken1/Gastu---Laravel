@@ -1,9 +1,10 @@
-@extends('layouts.app')
-@section('title', 'AHORRO META')
+@extends('layouts.admin-app')
+@section('title', 'Conceptos de Egreso')
 @section('content')
+
 <div class="d-flex justify-content-between mb-3">
-    <h1 class="h4">ESTOY EN </h1>
-    <a href="{{ route('products.create') }}" class="btn btn-primary">Nuevo</a>
+    <h1 class="h4">Productos</h1>
+    <a href="{{ route('conceptoEgreso.create') }}" class="btn btn-primary">Nuevo</a>
 </div>
 <table class="table table-striped">
     <thead>
@@ -39,4 +40,5 @@
     </tbody>
 </table>
 {{ $products->links() }}
+
 @endsection

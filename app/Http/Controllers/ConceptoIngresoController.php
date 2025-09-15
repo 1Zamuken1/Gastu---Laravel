@@ -6,189 +6,47 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ConceptoIngreso;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ConceptoIngresoController extends Controller
 {
     public function index(){
     $conceptosIngreso = ConceptoIngreso::all();
 
-    if($conceptosIngreso->isEmpty()){
-        return response()->json([
-            'message' => 'No hay conceptos de ingreso registrados',
-            'status' => 404
-        ], 404);
-    }
+    $conceptoIngresos = ConceptoIngreso::orderBy('concepto_ingreso_id', 'desc')->paginate(10);
 
-    return response()->json([
-        'conceptosIngreso' => $conceptosIngreso,
-        'status' => 200
-    ], 200);
+    return view('concepto_ingreso.index', compact('conceptoIngresos'));
 }
 
 
-    public function store(Request $request){
-        $validator = Validator::make($request->all(), [
+    public function store(Request $request): RedirectResponse{
+        $validated = $request->validate([
             'nombre' => 'required|string|max:100',
             'descripcion' => 'nullable|string|max:200',
-            'usuario_id' => 'nullable|integer',
+            //'usuario_id' => 'nullable|integer',
         ]);
-
-        if($validator->fails()){
-            $data = [
-                'message' => 'Error de validación',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
-        }
-
-        $conceptoIngreso = ConceptoIngreso::create([
-            'nombre' => $request->nombre,
-            'descripcion' => $request->descripcion,
-            'usuario_id' => $request->usuario_id
-        ]);
-
-        if(!$conceptoIngreso){
-            $data = [
-                'message' => 'Error al crear el concepto de ingreso',
-                'status' => 500
-            ];
-            return response()->json($data, 500);
-        }
-
-        $data = [
-            'message' => 'Concepto de ingreso creado exitosamente',
-            'conceptoIngreso' => $conceptoIngreso,
-            'status' => 201
-        ];
-
-        return response()->json($data, 201);
     }
 
-    public function show($id){
-        $conceptoIngreso = ConceptoIngreso::find($id);
-
-        if(!$conceptoIngreso){
-            $data = [
-                'message' => 'Concepto de ingreso no encontrado',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
-        }
-
-        $data = [
-            'conceptoIngreso' => $conceptoIngreso,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
+    public function show(ConceptoIngreso $conceptoIngreso): View{
+        return view('concepto_ingreso.show', compact('conceptoIngreso'));
     }
 
-    public function destroy($id){
-        $conceptoIngreso = ConceptoIngreso::find($id);
-
-        if(!$conceptoIngreso){
-            $data = [
-                'message' => 'Concepto de ingreso no encontrado',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
-        }
-
+    public function destroy(ConceptoIngreso $conceptoIngreso): RedirectResponse{
         $conceptoIngreso->delete();
-
-        $data = [
-            'message' => 'Concepto de ingreso eliminado exitosamente',
-            'conceptoIngreso' => $conceptoIngreso,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
+        return redirect()->route('concepto_ingreso.index')->with('success', 'Concepto de ingreso eliminado exitosamente.');
     }
 
-    public function update(Request $request, $id){
-        $conceptoIngreso = ConceptoIngreso::find($id);
-
-        if(!$conceptoIngreso){
-            $data = [
-                'message' => 'Concepto de ingreso no encontrado',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
-        }
-
-        $validator = Validator::make($request->all(), [
+    public function update(Request $request, ConceptoIngreso $conceptoIngreso): RedirectResponse{
+        $validated = $request->validate([
             'nombre' => 'required|string|max:100',
             'descripcion' => 'nullable|string|max:200',
-            'usuario_id' => 'nullable|integer',
         ]);
 
-        if($validator->fails()){
-            $data = [
-                'message' => 'Error de validación',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
-        }
+        $conceptoIngreso->update($validated);
 
-        $conceptoIngreso->nombre = $request->nombre;
-        $conceptoIngreso->descripcion = $request->descripcion;
-        $conceptoIngreso->save();
+        return redirect()->route('concepto_ingreso.index')->with('success', 'Concepto de ingreso actualizado exitosamente.');
 
-        $data = [
-            'message' => 'Concepto de ingreso actualizado exitosamente',
-            'conceptoIngreso' => $conceptoIngreso,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
     }
-
-    public function updatePartial(Request $request, $id){
-        $conceptoIngreso = ConceptoIngreso::find($id);
-
-        if(!$conceptoIngreso){
-            $data = [
-                'message' => 'Concepto de ingreso no encontrado',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'nombre' => 'nullable|string|max:100',
-            'descripcion' => 'nullable|string|max:200',
-            'usuario_id' => 'nullable|integer',
-        ]);
-
-        if($validator->fails()){
-            $data = [
-                'message' => 'Error de validación',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ];
-            return response()->json($data, 400);
-        }
-
-        if($request->has('nombre')){
-            $conceptoIngreso->nombre = $request->nombre;
-        }
-        if($request->has('descripcion')){
-            $conceptoIngreso->descripcion = $request->descripcion;
-        }
-        if($request->has('usuario_id')){
-           $conceptoIngreso->usuario_id = $request->usuario_id;
-        }
-
-        $conceptoIngreso->save();
-
-        $data = [
-            'message' => 'Concepto de ingreso actualizado parcialmente exitosamente',
-            'conceptoIngreso' => $conceptoIngreso,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
-    }
+    
 }

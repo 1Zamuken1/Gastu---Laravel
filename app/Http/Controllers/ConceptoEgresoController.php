@@ -1,103 +1,52 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use App\Models\ConceptoEgreso;
 use Illuminate\Http\Request;
+use App\Models\ConceptoEgreso;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ConceptoEgresoController extends Controller
-{  
-   
-    public function index()
-    {
-        $conceptoEgresos = ConceptoEgreso::all();
-       return view('gastos', compact('conceptoEgresos'));
-    }
+{
+    public function index(){
+    $conceptosEgreso = ConceptoEgreso::all();
 
-    public function create()
-    {
-        $conceptos = ConceptoEgreso::all();
-        return response()->json([
-            'status' => 200,
-            'conceptos' => $conceptos
-        ], 200);
-    }
+    $conceptoEgreso = ConceptoEgreso::orderBy('concepto_egreso_id', 'desc')->paginate(10);
 
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
+    return view('concepto_egreso.index', compact('conceptoEgresos'));
+}
+
+
+    public function store(Request $request): RedirectResponse{
+        $validated = $request->validate([
             'nombre' => 'required|string|max:100',
-            'descripcion' => 'nullable|string|max:255',
+            'descripcion' => 'nullable|string|max:200',
+            //'usuario_id' => 'nullable|integer',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 400,
-                'errors' => $validator->errors()
-            ], 400);
-        }
-
-        $concepto = ConceptoEgreso::create($request->only([
-            'nombre',
-            'descripcion'
-        ]));
-
-        return response()->json([
-            'status' => 201,
-            'message' => 'Concepto de egreso creado exitosamente',
-            'concepto' => $concepto
-        ], 201);
     }
 
-    public function show(ConceptoEgreso $conceptoEgreso)
-    {
-        return response()->json([
-            'status' => 200,
-            'concepto' => $conceptoEgreso
-        ], 200);
+    public function show(ConceptoEgreso $conceptoEgreso): View{
+        return view('concepto_egreso.show', compact('conceptoEgreso'));
     }
 
-    public function edit(ConceptoEgreso $conceptoEgreso)
-    {
-        return response()->json([
-            'status' => 200,
-            'concepto' => $conceptoEgreso
-        ], 200);
-    }
-
-    public function update(Request $request, ConceptoEgreso $concepto)
-    {
-        $validator = Validator::make($request->all(), [
-            'nombre' => 'sometimes|required|string|max:100',
-            'descripcion' => 'sometimes|nullable|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 400,
-                'errors' => $validator->errors()
-            ], 400);
-        }
-
-        $concepto->update($request->only([
-            'nombre',
-            'descripcion'
-        ]));
-
-        return response()->json([
-            'status' => 200,
-            'message' => 'Concepto de egreso actualizado exitosamente',
-            'concepto' => $concepto
-        ], 200);
-    }
-
-    public function destroy(ConceptoEgreso $conceptoEgreso)
-    {
+    public function destroy(ConceptoEgreso $conceptoEgreso): RedirectResponse{
         $conceptoEgreso->delete();
-        return response()->json([
-            'status' => 200,
-            'message' => 'Concepto de egreso eliminado exitosamente'
-        ], 200);
+        return redirect()->route('concepto_egreso.index')->with('success', 'Concepto de egreso eliminado exitosamente.');
     }
+
+    public function update(Request $request, ConceptoEgreso $conceptoEgreso): RedirectResponse{
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:100',
+            'descripcion' => 'nullable|string|max:200',
+        ]);
+
+        $conceptoEgreso->update($validated);
+
+        return redirect()->route('concepto_egreso.index')->with('success', 'Concepto de egreso actualizado exitosamente.');
+
+    }
+    
 }

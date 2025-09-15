@@ -18,8 +18,13 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
+            '@': '/resources/js', // acceso rápido a tus JS
             jquery: 'jquery/dist/jquery.js',
         },
     },
+    build: {
+        outDir: 'public/build',   // asegura que genere manifest.json aquí
+        manifest: true,
+        emptyOutDir: true,
+    },
 });
-

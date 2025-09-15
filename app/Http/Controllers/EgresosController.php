@@ -20,10 +20,12 @@ class EgresosController extends Controller
 
     // Mostrar formulario para crear un nuevo egreso
     public function create()
-    {   
-        $egresos = Egreso::all();
-        return view('egresos.create', compact('egresos'));
-    }
+{
+    $conceptoEgresos = ConceptoEgreso::all();
+    return view('egresos.partials.modal-form', compact('conceptoEgresos'));
+}
+
+
 
     // Guardar un nuevo egreso
     public function store(Request $request)
@@ -108,4 +110,6 @@ class EgresosController extends Controller
         return redirect()->route('egresos.index')
             ->with('success', 'Egreso eliminado exitosamente');
     }
+
+
 }
