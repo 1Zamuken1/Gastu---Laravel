@@ -28,6 +28,12 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
+
+/*
+Login
+*/
+Route::get("/login", [AuthController::class, "login"]);
+
 Route::resource('ahorroMeta', AhorroMetaController::class);
 Route::resource('ahorroProgramado', AhorroProgramadoController::class);
 Route::resource('aporteAhorro', AporteAhorroController::class);
@@ -60,3 +66,14 @@ Route::get('/conceptoegresos/modal', [ConceptoEgresoController::class, 'modal'])
     ->name('conceptoegresos.modal');
 
 Route::get('/', fn() => view('concepto_ingreso.index'));
+
+
+
+//Ingresos
+Route::get('/ingresos', [IngresoController::class, 'index'])->name('ingresos.index');
+//Route::post('/ingresos', [IngresoController::class, 'store'])->name('ingresos.store');
+Route::get('/ingresos/create/{id?}', [IngresoController::class, 'create2'])->name('ingresos.create');
+
+Route::post('/ingresos/store', [IngresoController::class, 'store'])->name('ingresos.store');
+Route::post('/ingresos/update/{id}', [IngresoController::class, 'update'])->name('ingresos.update');
+Route::delete('/ingresos/destroy/{id}', [IngresoController::class, 'destroy'])->name('ingresos.destroy');
